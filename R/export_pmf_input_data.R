@@ -14,8 +14,9 @@ export_pmf_input_data <- function(df, file) {
   # Checks
   # Missing-ness
   # Dates
+  # Negatives
   
-  readr::write_delim(df, delim = "\t")
+  readr::write_delim(df, file, delim = "\t")
   return(invisible(df))
   
 }
