@@ -212,7 +212,7 @@ format_scaled_residuals_by_species <- function(text, tz) {
     purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
     purrr::set_names(c("model_run", "species", "date", "residual")) %>% 
     mutate(model_run = as.integer(model_run),
-           date = lubridate::mdy_hm(date, tz = tz))
+           date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
   
   return(df)
   
@@ -233,7 +233,7 @@ format_scaled_residuals_by_date <- function(text, tz) {
     purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
     purrr::set_names(c("model_run", "date", "species", "residual")) %>% 
     mutate(model_run = as.integer(model_run),
-           date = lubridate::mdy_hm(date, tz = tz))
+           date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
   
   return(df)
   

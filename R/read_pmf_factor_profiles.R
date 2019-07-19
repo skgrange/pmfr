@@ -29,7 +29,7 @@ read_pmf_factor_profiles <- function(file) {
   )
   
   # Clean names
-  names(df)[2:3] <- c("model_run", "variable")
+  names(df)[2:3] <- c("model_run", "species")
   names(df)[-2:-3] <- stringr::str_to_lower(names(df)[-2:-3])
   names(df)[-2:-3] <- stringr::str_replace_all(names(df)[-2:-3], " ", "_")
   
@@ -77,7 +77,7 @@ read_pmf_factor_profiles <- function(file) {
   df <- df %>% 
     select(factor_profile,
            model_run,
-           variable,
+           species,
            dplyr::starts_with("factor_"))
 
   return(df)
@@ -97,9 +97,9 @@ read_pmf_factor_profiles <- function(file) {
 tidy_pmf_profiles <- function(df) {
   
   df %>% 
-    tidyr::gather(factor, value, -c(factor_profile, model_run, variable)) %>% 
+    tidyr::gather(factor, value, -c(factor_profile, model_run, species)) %>% 
     arrange(factor,
             factor_profile, 
-            variable)
+            species)
   
 }

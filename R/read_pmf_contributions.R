@@ -29,8 +29,10 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Parse dates
   df <- df %>% 
-    mutate(model_run = as.integer(model_run),
-           date = lubridate::mdy_hm(date, tz = tz))
+    filter(!stringr::str_detect(model_run, "Factor Contributions"),
+           !is.na(date)) %>% 
+    dplyr::mutate_all(type.convert, as.is = TRUE) %>% 
+    mutate(date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
   
   return(df)
   
