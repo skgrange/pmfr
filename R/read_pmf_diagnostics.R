@@ -130,8 +130,10 @@ format_base_run_summary_table <- function(text) {
     .[. != ""] %>% 
     readr::read_csv() %>% 
     purrr::set_names(
-      c("model_run", "q_robust", "q_true", "converged", "number_of_steps", 
-        "q_true_q_exp")
+      c(
+        "model_run", "q_robust", "q_true", "converged", "number_of_steps", 
+        "q_true_q_exp"
+        )
     ) %>% 
     mutate(model_run = as.integer(model_run),
            converged = if_else(converged == "Yes", TRUE, FALSE))
