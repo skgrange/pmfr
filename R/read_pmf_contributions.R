@@ -28,7 +28,9 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   names(df)[-1:-2] <- stringr::str_replace_all(names(df)[-1:-2], " ", "_")
   
   # Parse dates
-  df <- mutate(df, date = lubridate::mdy_hm(date, tz = tz))
+  df <- df %>% 
+    mutate(model_run = as.integer(model_run),
+           date = lubridate::mdy_hm(date, tz = tz))
   
   return(df)
   

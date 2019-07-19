@@ -113,7 +113,12 @@ format_base_run_summary_table <- function(text) {
   
   df <- text[index_start:index_end] %>% 
     .[. != ""] %>% 
-    readr::read_csv()
+    readr::read_csv() %>% 
+    purrr::set_names(
+      c("model_run", "q_robust", "q_true", "converged", "number_of_steps", 
+        "q_true_q_exp")
+    ) %>% 
+    mutate(converged = if_else(converged == "Yes", TRUE, FALSE))
   
   return(df)
   
@@ -121,6 +126,8 @@ format_base_run_summary_table <- function(text) {
 
 
 format_ks_test <- function(text) {
+  
+  # To-do, vectorise this
   
   index_start <- stringr::str_which(text, "Regression diagnostics") + 1
   index_end <- stringr::str_which(text, "Scaled residuals beyond")[1] - 1
@@ -147,6 +154,8 @@ format_scaled_residual_analysis <- function(text) {
       dplyr::select_if(Negate(is.logical))
   )
   
+  names(df)[1] <- "model_run"
+  
   return(df)
   
 }
@@ -164,6 +173,8 @@ format_scaled_residual_analysis_sum_d <- function(text) {
       readr::read_csv() %>% 
       dplyr::select_if(Negate(is.logical))
   )
+  
+  names(df)[1:2] <- c("model_run", "model_run_two")
 
   return(df)
   
@@ -171,6 +182,8 @@ format_scaled_residual_analysis_sum_d <- function(text) {
 
 
 format_scaled_residuals_by_species <- function(text, tz) {
+  
+  # To-do, vectorise this
  
   index_start <- stringr::str_which(text, "dates by species") + 1
   index_end <- stringr::str_which(text, "species by date") - 1
@@ -187,6 +200,8 @@ format_scaled_residuals_by_species <- function(text, tz) {
 
 
 format_scaled_residuals_by_date <- function(text, tz) {
+  
+  # To-do, vectorise this
   
   index_start <- stringr::str_which(text, "species by date") + 1
   

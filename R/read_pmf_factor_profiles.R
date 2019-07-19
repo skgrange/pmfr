@@ -21,27 +21,65 @@ read_pmf_factor_profiles <- function(file) {
   index_end <- if_else(is.na(index_end), length(text_filter), index_end)
   
   # Split into pieces then parse the tabular data
+  # Message supression is for missing variable names
   suppressWarnings(
     df <- purrr::map2(index_start, index_end, ~text_filter[.x:.y]) %>% 
-      purrr::map_dfr(readr::read_csv, .id = "factor_profile_type")
+      purrr::map_dfr(readr::read_csv, .id = "table") %>% 
+      mutate(table = as.integer(table))
   )
   
   # Clean names
   names(df)[2:3] <- c("model_run", "variable")
-  names(df)[-1:-3] <- stringr::str_to_lower(names(df)[-1:-3])
-  names(df)[-1:-3] <- stringr::str_replace_all(names(df)[-1:-3], " ", "_")
+  names(df)[-2:-3] <- stringr::str_to_lower(names(df)[-2:-3])
+  names(df)[-2:-3] <- stringr::str_replace_all(names(df)[-2:-3], " ", "_")
   
   # Decode factor profiles
   df <- df %>% 
-    mutate(factor_profile = dplyr::case_when(
-      factor_profile_type == 1 ~ "concentration_of_species",
-      factor_profile_type == 2 ~ "percentage_of_species_sum",
-      factor_profile_type == 3 ~ "percentage_of_factor_total",
-    )) %>% 
-    select(-factor_profile_type) %>% 
-    select(factor_profile,
-           everything())
+    tibble::rowid_to_column() %>% 
+    mutate(model_run_lag = dplyr::lag(model_run),
+           model_run_lag = if_else(is.na(model_run_lag), 2, model_run_lag),
+           model_run_delta = model_run_lag - model_run)
   
+  # For a single model run
+  if (length(unique(df$table)) == 3) {
+    
+    df <- df %>% 
+      mutate(
+        factor_profile = dplyr::case_when(
+          table == 1 ~ "concentration_of_species",
+          table == 2 ~ "percentage_of_species_sum",
+          table == 3 ~ "percentage_of_factor_total"
+        )
+      )
+    
+  } else {
+    
+    # Isolate start of new factor profile types
+    # Modulo could be used on "table" here, but results in false positives
+    df_factor_profiles <- df %>% 
+      filter(model_run_delta > 0) %>% 
+      select(rowid) %>% 
+      mutate(
+        factor_profile = c(
+          "concentration_of_species", "percentage_of_species_sum",
+          "percentage_of_factor_total"
+        )
+      )
+    
+    # Join start of new factor profile types and push forward
+    df <- df %>% 
+      left_join(df_factor_profiles, by = "rowid") %>% 
+      tidyr::fill(factor_profile) 
+    
+  }
+  
+  # Select what is needed
+  df <- df %>% 
+    select(factor_profile,
+           model_run,
+           variable,
+           dplyr::starts_with("factor_"))
+
   return(df)
   
 }
