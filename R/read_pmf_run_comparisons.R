@@ -7,16 +7,16 @@
 #' @return Tibble. 
 #' 
 #' @export
-read_pmf_run_comparison <- function(file) {
+read_pmf_run_comparisons <- function(file) {
   
   # Read as text
   text <- readr::read_lines(file)
   
   # Get the three different types of statistics
   df <- bind_rows(
-    read_pmf_run_comparison_concentrations(text),
-    read_pmf_run_comparison_species_sum(text),
-    read_pmf_run_comparison_total(text)
+    read_pmf_run_comparisons_concentrations(text),
+    read_pmf_run_comparisons_species_sum(text),
+    read_pmf_run_comparisons_total(text)
   )
   
   # Give good names
@@ -31,7 +31,7 @@ read_pmf_run_comparison <- function(file) {
 }
 
 
-read_pmf_run_comparison_concentrations <- function(text) {
+read_pmf_run_comparisons_concentrations <- function(text) {
   
   # Isolate table
   index_start <- stringr::str_which(text, "Concentration of Species") + 1
@@ -44,7 +44,7 @@ read_pmf_run_comparison_concentrations <- function(text) {
   index_end_table <- dplyr::lead(index_start_table) - 2L
   index_end_table <- if_else(is.na(index_end_table), length(text_filter), index_end_table)
   
-  df <- read_pmf_run_comparison_tables(
+  df <- read_pmf_run_comparisons_tables(
     text_filter, 
     index_start = index_start_table, 
     index_end = index_end_table, 
@@ -56,7 +56,7 @@ read_pmf_run_comparison_concentrations <- function(text) {
 }
 
 
-read_pmf_run_comparison_species_sum <- function(text) {
+read_pmf_run_comparisons_species_sum <- function(text) {
   
   # Isolate table
   index_start <- stringr::str_which(text, "Percent of Species") + 1
@@ -69,7 +69,7 @@ read_pmf_run_comparison_species_sum <- function(text) {
   index_end_table <- dplyr::lead(index_start_table) - 2L
   index_end_table <- if_else(is.na(index_end_table), length(text_filter), index_end_table)
   
-  df <- read_pmf_run_comparison_tables(
+  df <- read_pmf_run_comparisons_tables(
     text_filter, 
     index_start = index_start_table, 
     index_end = index_end_table, 
@@ -81,7 +81,7 @@ read_pmf_run_comparison_species_sum <- function(text) {
 }
 
 
-read_pmf_run_comparison_total <- function(text) {
+read_pmf_run_comparisons_total <- function(text) {
   
   # Isolate table
   index_start <- stringr::str_which(text, "Percent of Total") + 1
@@ -93,7 +93,7 @@ read_pmf_run_comparison_total <- function(text) {
   index_end_table <- dplyr::lead(index_start_table) - 2L
   index_end_table <- if_else(is.na(index_end_table), length(text_filter), index_end_table)
   
-  df <- read_pmf_run_comparison_tables(
+  df <- read_pmf_run_comparisons_tables(
     text_filter, 
     index_start = index_start_table, 
     index_end = index_end_table, 
@@ -105,7 +105,7 @@ read_pmf_run_comparison_total <- function(text) {
 }
 
 
-read_pmf_run_comparison_tables <- function(text, index_start, index_end, 
+read_pmf_run_comparisons_tables <- function(text, index_start, index_end, 
                                            comparison) {
   
   # Message supression is for missing column name
