@@ -22,7 +22,7 @@ read_pmf_diagnostics <- function(file, tz = "UTC") {
     base_run_summary_table = format_base_run_summary_table(text),
     scaled_residual_analysis = format_scaled_residual_analysis(text),
     scaled_residual_analysis_sum_d = format_scaled_residual_analysis_sum_d(text),
-    ks_test = format_ks_test(text),
+    regression_diagnostics = format_ks_test(text),
     scaled_outlier_residuals_by_species = format_scaled_residuals_by_species(text, tz = tz),
     scaled_outlier_residuals_by_date = format_scaled_residuals_by_date(text, tz = tz)
   )
@@ -34,6 +34,8 @@ read_pmf_diagnostics <- function(file, tz = "UTC") {
 
 
 format_analysis_summary <- function(text) {
+  
+  # To-do: generalise with the f-peak functions
   
   index_start <- stringr::str_which(text, "Analysis Summary") + 1
   index_end <- stringr::str_which(text, "Input Data Statistics") - 1
@@ -59,6 +61,7 @@ format_analysis_summary <- function(text) {
     dplyr::mutate_all(~if_else(. == "", NA_character_, .)) %>% 
     mutate(time_of_run = lubridate::mdy_hm(time_of_run, tz = "UTC"),
            concentration_file = stringr::str_replace_all(concentration_file, "\\\\", "/"),
+           configuration_file = stringr::str_replace_all(configuration_file, "\\\\", "/"),
            uncertainty_file = stringr::str_replace_all(uncertainty_file, "\\\\", "/"))
   
   return(df)

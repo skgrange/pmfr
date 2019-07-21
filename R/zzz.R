@@ -8,7 +8,8 @@ if (getRversion() >= "2.15.1") {
     ".", "Base_Run", "Date_Time", "name", "time_of_run", "model_run_lag", 
     "model_run_delta", "rowid", "converged", "concentration_file", 
     "uncertainty_file", "percent_modelled_samples", "percent_raw_samples",
-    "category", "species", "site", "statistic", "...1", "...3"
+    "category", "species", "site", "statistic", "...1", "...3", "X1", "X2",
+    "f_peak_run", "base_run", "residual_type", "configuration_file"
   )
 
   # Squash the notes
