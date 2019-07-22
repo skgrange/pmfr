@@ -91,7 +91,7 @@ read_pmf_f_peak_diagnostics_factor_profiles <- function(text) {
   
   # Isolate unit
   index_start <- stringr::str_which(text, "Factor Profiles")[1]
-  index_end <- stringr::str_which(text, "Factor Contributions") - 1L
+  index_end <- stringr::str_which(text, "Factor Contributions")[1] - 1L
   text_filter <- text[index_start:index_end]
   
   # Get tables
@@ -112,6 +112,10 @@ read_pmf_f_peak_diagnostics_factor_profiles <- function(text) {
              factor_profile == 3 ~ "percentage_of_factor_total")
     )
   
+  # Give factor names
+  factor_names <- stringr::str_c("factor_", seq(1, ncol(df) - 3L))
+  names(df)[-1:-3] <- factor_names
+  
   return(df)
   
 }
@@ -121,14 +125,20 @@ read_pmf_f_peak_diagnostics_factor_contributions <- function(text, tz) {
   
   # Isolate unit
   index_start <- stringr::str_which(text, "Factor Contributions") + 1L
-  index_end <- stringr::str_which(text, "Regression diagnostics") - 1L
+  index_regression_diagnostics <- stringr::str_which(text, "Regression diagnostics")[1] - 1L
+  index_end <- dplyr::lead(index_start) - 2L
+  index_end <- if_else(is.na(index_end), index_regression_diagnostics, index_end)
   
-  df <- text[index_start:index_end] %>% 
-    readr::read_csv(col_names = FALSE) %>% 
+  df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
+    purrr::map_dfr(readr::read_csv, , col_names = FALSE, .id = "model_run") %>% 
     rename(f_peak_run = X1,
            date = X2) %>% 
     mutate(f_peak_run = as.integer(f_peak_run),
            date = lubridate::mdy_hms(date, tz = tz, truncated = 3))
+  
+  # Give factor names
+  factor_names <- stringr::str_c("factor_", seq(1, ncol(df) - 3L))
+  names(df)[-1:-3] <- factor_names
   
   return(df)
   
@@ -138,12 +148,15 @@ read_pmf_f_peak_diagnostics_factor_contributions <- function(text, tz) {
 read_pmf_f_peak_diagnostics_regression_diagnostics <- function(text) {
   
   index_start <- stringr::str_which(text, "Regression diagnostics") + 2L
+  index_end <- dplyr::lead(index_start) - 3L
+  index_end <- if_else(is.na(index_end), length(text), index_end)
   
-  df <- text[index_start:length(text)] %>% 
-    readr::read_csv() %>% 
+  df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
+    purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
+    mutate(model_run = as.integer(model_run)) %>% 
     purrr::set_names(
       c(
-        "species", "intercept", "slope", "standard_error", "r_squared", 
+        "model_run", "species", "intercept", "slope", "standard_error", "r_squared", 
         "statistic", "p_value"
       )
     )
