@@ -9,7 +9,8 @@ if (getRversion() >= "2.15.1") {
     "model_run_delta", "rowid", "converged", "concentration_file", 
     "uncertainty_file", "percent_modelled_samples", "percent_raw_samples",
     "category", "species", "site", "statistic", "...1", "...3", "X1", "X2",
-    "f_peak_run", "base_run", "residual_type", "configuration_file"
+    "f_peak_run", "base_run", "residual_type", "configuration_file",
+    "bootstrap_factor", "error_estimation_type", "f_peak_number", "number_of_steps"
   )
 
   # Squash the notes
