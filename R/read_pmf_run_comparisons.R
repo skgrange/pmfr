@@ -37,7 +37,7 @@ read_pmf_run_comparisons_concentrations <- function(text) {
   index_start <- stringr::str_which(text, "Concentration of Species") + 1
   index_end <- stringr::str_which(text, "Percent of Species") - 1
   
-  # Filter text to concentration tables
+  # Filter text to tables
   text_filter <- text[index_start:index_end]
   
   index_start_table <- stringr::str_which(text_filter, "Factor") + 1L
@@ -62,7 +62,7 @@ read_pmf_run_comparisons_species_sum <- function(text) {
   index_start <- stringr::str_which(text, "Percent of Species") + 1
   index_end <- stringr::str_which(text, "Percent of Total") - 1
   
-  # Filter text to concentration tables
+  # Filter text to tables
   text_filter <- text[index_start:index_end]
   
   index_start_table <- stringr::str_which(text_filter, "Factor") + 1L
@@ -86,7 +86,7 @@ read_pmf_run_comparisons_total <- function(text) {
   # Isolate table
   index_start <- stringr::str_which(text, "Percent of Total") + 1
   
-  # Filter text to concentration tables
+  # Filter text to tables
   text_filter <- text[index_start:length(text)]
   
   index_start_table <- stringr::str_which(text_filter, "Factor") + 1L
@@ -106,7 +106,7 @@ read_pmf_run_comparisons_total <- function(text) {
 
 
 read_pmf_run_comparisons_tables <- function(text, index_start, index_end, 
-                                           comparison) {
+                                            comparison) {
   
   # Message supression is for missing column name
   df <- suppressWarnings(

@@ -2,6 +2,7 @@
 
 export("%>%")
 export(export_pmf_input_data)
+export(read_pmf_base_error_estimations)
 export(read_pmf_configuration)
 export(read_pmf_contributions)
 export(read_pmf_diagnostics)
