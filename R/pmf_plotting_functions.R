@@ -84,3 +84,32 @@ plot_pmf_factor_contributions <- function(df, by_model_run = TRUE) {
   return(plot)
   
 }
+
+
+#' Function to plot PMF Q robust scores from 
+#' \code{\link{read_pmf_diagnostics}}'s \code{base_run_summary_table} table. 
+#' 
+#' @author Stuart K. Grange
+#' 
+#' @param df Tibble from \code{\link{read_pmf_diagnostics}}. 
+#' 
+#' @return ggplot2 with point geometries. 
+#' 
+#' @export
+plot_pmf_q_robust <- function(df) {
+  
+  df %>% 
+    ggplot(aes(q_robust, stats::reorder(model_run, q_robust), colour = converged)) + 
+    geom_point() + 
+    theme_minimal() + 
+    scale_colour_viridis_d(
+      name = "Converged?",
+      option = "inferno",
+      begin = 0.3,
+      end = 0.8
+    ) +
+    ylab("Model run") + 
+    xlab(expression(Q[Robust])) + 
+    theme(legend.position = "bottom")
+  
+}

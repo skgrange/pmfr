@@ -27,7 +27,7 @@ read_pmf_source_contributions <- function(file) {
   index_end <- if_else(is.na(index_end), ncol(df), index_end)
   
   # Split into the different runs
-  df <- purrr::map2(index_start, index_end, ~slice(df, .x:.y)) %>% 
+  df <- purrr::map2(index_start, index_end, ~dplyr::slice(df, .x:.y)) %>% 
     purrr::map_dfr(read_pmf_source_contributions_run_worker, .id = "model_run") %>% 
     mutate(model_run = as.integer(model_run))
   
