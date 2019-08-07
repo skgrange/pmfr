@@ -27,10 +27,12 @@ read_pmf_residuals <- function(file, tz = "UTC") {
   list_data <- purrr::map(list_data, stringr::str_subset, "^,", negate = TRUE)
   
   # Parse text into table and clean a bit
+  # Drop Q(true)/Qexp variable too, this needs more thinking at some point
   df <- list_data %>% 
     purrr::map_dfr(readr::read_csv, .id = "residual_type") %>% 
     rename(base_run = Base_Run,
            date = Date_Time) %>% 
+    select(-dplyr::matches("Qexp")) %>% 
     mutate(residual_type = as.integer(residual_type),
            residual_type = if_else(residual_type %% 2 == 0, "residual_scaled", "residual"), 
            base_run = as.integer(base_run),
