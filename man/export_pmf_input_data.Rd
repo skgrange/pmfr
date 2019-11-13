@@ -4,12 +4,14 @@
 \alias{export_pmf_input_data}
 \title{Function to export a data table for use with the EPA PMF tool.}
 \usage{
-export_pmf_input_data(df, file, zero_check = TRUE)
+export_pmf_input_data(df, file, format_date = TRUE, zero_check = TRUE)
 }
 \arguments{
 \item{df}{Data frame to export.}
 
 \item{file}{File name to export data to.}
+
+\item{format_date}{Should the dates be formatted?}
 
 \item{zero_check}{Should the table be checked for values less than and equal 
 to 0?}
