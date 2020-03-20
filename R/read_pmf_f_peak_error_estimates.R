@@ -7,7 +7,7 @@
 #' @return Named list containing tibbles. 
 #' 
 #' @export
-read_pmf_f_peak_error_estimation <- function(file) {
+read_pmf_f_peak_error_estimates <- function(file) {
   
   # Read file as text
   text <- readr::read_lines(file)
