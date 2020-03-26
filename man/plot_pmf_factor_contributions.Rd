@@ -5,15 +5,21 @@
 \title{Function to plot PMF factor contributions using data from 
 \code{\link{read_pmf_factor_profiles}}.}
 \usage{
-plot_pmf_factor_contributions(df, by_model_run = TRUE)
+plot_pmf_factor_contributions(
+  df,
+  variable = c("factor", "source"),
+  by_model_run = TRUE
+)
 }
 \arguments{
 \item{df}{Tibble from \code{\link{read_pmf_factor_profiles}}.}
 
+\item{variable}{Variable to plot, either \code{"factor"} or \code{"source"}.}
+
 \item{by_model_run}{Should the plots be faceted by model runs?}
 }
 \value{
-ggplot2 with bar geometries.
+\strong{ggplot2} with bar geometries.
 }
 \description{
 Function to plot PMF factor contributions using data from 

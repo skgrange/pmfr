@@ -66,7 +66,7 @@ read_pmf_source_contributions_run_worker <- function(df) {
     "mean", "standard_deviation", "interquartile_range", "missing"
   )
   
-  # Create a squence to identify factor
+  # Create a sequence to identify factor
   factor_count_sequence <- rep(1L:factor_count, each = length(variable_names))
   
   # Replicate variable names and add factor id
@@ -82,7 +82,7 @@ read_pmf_source_contributions_run_worker <- function(df) {
   df <- df %>% 
     select(-dplyr::ends_with("missing")) %>% 
     dplyr::bind_cols(df_keys) %>% 
-    tidyr::gather(variable, value, -c(site, species)) %>% 
+    tidyr::pivot_longer(-c(site, species), names_to = "variable") %>% 
     tidyr::separate(col = variable, into = c("factor", "statistic"), sep = ";") %>% 
     mutate(value = as.numeric(value)) %>% 
     arrange(site, 

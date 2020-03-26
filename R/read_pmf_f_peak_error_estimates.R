@@ -44,11 +44,11 @@ read_pmf_f_peak_error_estimation_summary <- function(text) {
     readr::read_csv() %>% 
     purrr::set_names(
       c(
-        "f_peak_number", "strength", "d_q_robust", "q_robust", "d_q_robust_percent", 
+        "f_peak_run", "strength", "d_q_robust", "q_robust", "d_q_robust_percent", 
         "q_aux", "q_true", "converged", "number_of_steps"
       )
     ) %>% 
-    mutate(f_peak_number = as.integer(f_peak_number),
+    mutate(f_peak_run = as.integer(f_peak_run),
            number_of_steps = as.integer(number_of_steps),
            converged = converged == "Yes")
   

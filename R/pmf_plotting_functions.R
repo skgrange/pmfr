@@ -40,19 +40,30 @@ plot_pmf_factor_profile <- function(df, by_model_run = TRUE) {
 #' 
 #' @param df Tibble from \code{\link{read_pmf_factor_profiles}}. 
 #' 
+#' @param variable Variable to plot, either \code{"factor"} or \code{"source"}. 
+#' 
 #' @param by_model_run Should the plots be faceted by model runs? 
 #' 
-#' @return ggplot2 with bar geometries. 
+#' @return \strong{ggplot2} with bar geometries. 
 #' 
 #' @export
-plot_pmf_factor_contributions <- function(df, by_model_run = TRUE) {
+plot_pmf_factor_contributions <- function(df, variable = c("factor", "source"),
+                                          by_model_run = TRUE) {
+  
+  # Check variable input
+  stopifnot(variable[1] %in% c("factor", "source"))
+  
+  # Get group by vector
+  if (!"source" %in% names(df)) {
+    group_by_vector <- c("model_run", "factor_profile", "factor")
+  } else {
+    group_by_vector <- c("model_run", "factor_profile", "factor", "source")
+  }
   
   # Filter to concentrations
   df <- df %>% 
     filter(factor_profile == "concentration_of_species") %>% 
-    group_by(model_run,
-             factor_profile,
-             factor) %>% 
+    dplyr::group_by_at(group_by_vector) %>% 
     summarise(mean = mean(value),
               sum = sum(value)) %>% 
     ungroup() %>% 
@@ -61,19 +72,28 @@ plot_pmf_factor_contributions <- function(df, by_model_run = TRUE) {
            label = round(contribution_percent, 1),
            label = stringr::str_c(label, " %"))
   
+  # Switch source to factor
+  if (variable[1] == "source") {
+    df <- df %>% 
+      select(-factor) %>% 
+      rename(factor = source)
+  } else {
+    df <- mutate(df, factor = factor(factor))
+  }
+  
   # Stacked bar chart
   plot <- df %>% 
-    ggplot(aes("", contribution_percent, fill = factor)) + 
-    geom_bar(stat = "identity") + 
+    mutate() %>% 
+    ggplot(aes("", contribution, fill = factor)) + 
+    geom_col() + 
     geom_label(
       aes(label = label), 
       colour = "black",
       position = position_stack(vjust = 0.5),
       show.legend = FALSE
     ) + 
-    theme_void() + 
-    theme(legend.position = "bottom") +
-    guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
+    guides(fill = guide_legend(nrow = 1, byrow = TRUE, title = variable)) +
+    theme(legend.position = "bottom") + 
     coord_flip()
   
   # Facet

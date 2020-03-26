@@ -49,5 +49,5 @@ read_pmf_contributions <- function(file, tz = "UTC") {
 #' 
 #' @export
 tidy_pmf_contributions <- function(df) {
-  tidyr::gather(df, factor, value, -c(model_run, date))
+  tidyr::pivot_longer(df, -c(model_run, date), names_to = "factor")
 }

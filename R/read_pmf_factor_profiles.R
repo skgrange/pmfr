@@ -97,7 +97,7 @@ read_pmf_factor_profiles <- function(file) {
 tidy_pmf_profiles <- function(df) {
   
   df %>% 
-    tidyr::gather(factor, value, -c(factor_profile, model_run, species)) %>% 
+    tidyr::pivot_longer(-c(factor_profile, model_run, species), names_to = "factor") %>% 
     arrange(factor,
             factor_profile, 
             species)

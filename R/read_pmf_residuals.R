@@ -53,5 +53,5 @@ read_pmf_residuals <- function(file, tz = "UTC") {
 #' 
 #' @export
 tidy_pmf_residuals <- function(df) {
-  tidyr::gather(df, species, value, -c(residual_type, base_run, date))
+  tidyr::pivot_longer(df, -c(residual_type, base_run, date), names_to = "species")
 }

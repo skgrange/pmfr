@@ -75,7 +75,7 @@ read_pmf_f_peak_diagnostics_run_summary_table <- function(text) {
     readr::read_csv() %>% 
     purrr::set_names(
       c(
-        "f_peak_number", "strength", "d_q_robust", "q_robust", "d_q_robust_precent",
+        "f_peak_run", "strength", "d_q_robust", "q_robust", "d_q_robust_precent",
         "q_aux", "q_true", "converged", "number_of_steps"
       )
     ) %>% 
