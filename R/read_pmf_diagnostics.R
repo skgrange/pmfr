@@ -234,11 +234,19 @@ format_scaled_residuals_by_date <- function(text, tz) {
   # is the end of the last table
   index_end <- c(index_end[-1], length(text))
   
-  df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
-    purrr::set_names(c("model_run", "date", "species", "residual")) %>% 
-    mutate(model_run = as.integer(model_run),
-           date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
+  # Isolate data
+  df <- purrr::map2(index_start, index_end, ~text[.x:.y])
+  
+  # Logic is for when there is only headers
+  if (any(purrr::map_int(df, length) == 1)) {
+    return(tibble())
+  } else {
+    df <- df %>% 
+      purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
+      purrr::set_names(c("model_run", "date", "species", "residual")) %>% 
+      mutate(model_run = as.integer(model_run),
+             date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
+  }
   
   return(df)
   

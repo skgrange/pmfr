@@ -93,6 +93,7 @@ plot_pmf_factor_contributions <- function(df, variable = c("factor", "source"),
       show.legend = FALSE
     ) + 
     guides(fill = guide_legend(nrow = 1, byrow = TRUE, title = variable)) +
+    theme_minimal() + 
     theme(legend.position = "bottom") + 
     coord_flip()
   
