@@ -2,9 +2,11 @@
 
 export("%>%")
 export(export_pmf_input_data)
+export(extract_pmf_mass_factor_contributions)
 export(list_epa_pmf_outputs)
 export(plot_pmf_factor_contributions)
 export(plot_pmf_factor_profile)
+export(plot_pmf_mass_factor_contributions)
 export(plot_pmf_q_robust)
 export(read_pmf_base_error_estimations)
 export(read_pmf_configuration)

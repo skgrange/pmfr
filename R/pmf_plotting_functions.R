@@ -18,7 +18,7 @@ plot_pmf_factor_profile <- function(df, by_model_run = TRUE) {
   # Build plot
   plot <- df %>% 
     ggplot(aes(species, value, fill = factor)) +
-    geom_bar(stat = "identity") + 
+    geom_col() + 
     theme_minimal() + 
     ylab("Species contribution (%)") + 
     xlab("Species")
@@ -83,7 +83,6 @@ plot_pmf_factor_contributions <- function(df, variable = c("factor", "source"),
   
   # Stacked bar chart
   plot <- df %>% 
-    mutate() %>% 
     ggplot(aes("", contribution, fill = factor)) + 
     geom_col() + 
     geom_label(
@@ -132,5 +131,43 @@ plot_pmf_q_robust <- function(df) {
     ylab("Model run") + 
     xlab(expression(Q[Robust])) + 
     theme(legend.position = "bottom")
+  
+}
+
+
+#' Function to plot PMF mass factor contributions using data from 
+#' \code{\link{extract_pmf_mass_factor_contributions}}. 
+#' 
+#' @author Stuart K. Grange
+#' 
+#' @param df Tibble from \code{\link{extract_pmf_mass_factor_contributions}}. 
+#' 
+#' @return \strong{ggplot2} with bar geometries. 
+#' 
+#' @export
+plot_pmf_mass_factor_contributions <- function(df) {
+  
+  # Add labels
+  df <- df %>% 
+    mutate(contribution_percent = contribution * 100,
+           label = round(contribution_percent, 1),
+           label = stringr::str_c(label, " %"))
+  
+  # Stacked bar chart
+  plot <- df %>% 
+    ggplot(aes("", contribution, fill = factor)) + 
+    geom_col() + 
+    geom_label(
+      aes(label = label), 
+      colour = "black",
+      position = position_stack(vjust = 0.5),
+      show.legend = FALSE
+    ) + 
+    guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
+    theme_minimal() + 
+    theme(legend.position = "bottom") + 
+    coord_flip()
+  
+  return(plot)
   
 }
