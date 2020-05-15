@@ -27,7 +27,7 @@ extract_pmf_mass_factor_contributions <- function(df, model_run, species = "mass
   value_sum <- sum(df$value)
   
   # Calculate contributions
-  df <- mutate(df, contribution = value / value_sum)
+  df <- mutate(df, value_sum = !!value_sum, contribution = value / value_sum)
   
   return(df)
   
