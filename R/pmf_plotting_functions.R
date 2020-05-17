@@ -142,15 +142,17 @@ plot_pmf_q_robust <- function(df) {
 #' 
 #' @param df Tibble from \code{\link{extract_pmf_mass_factor_contributions}}. 
 #' 
+#' @param round Number of digits used for percentage labels.
+#' 
 #' @return \strong{ggplot2} with bar geometries. 
 #' 
 #' @export
-plot_pmf_mass_factor_contributions <- function(df) {
+plot_pmf_mass_factor_contributions <- function(df, round = 1) {
   
   # Add labels
   df <- df %>% 
     mutate(contribution_percent = contribution * 100,
-           label = round(contribution_percent, 1),
+           label = round(contribution_percent, round),
            label = stringr::str_c(label, " %"))
   
   # Stacked bar chart

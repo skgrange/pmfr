@@ -5,10 +5,12 @@
 \title{Function to plot PMF mass factor contributions using data from 
 \code{\link{extract_pmf_mass_factor_contributions}}.}
 \usage{
-plot_pmf_mass_factor_contributions(df)
+plot_pmf_mass_factor_contributions(df, round = 1)
 }
 \arguments{
 \item{df}{Tibble from \code{\link{extract_pmf_mass_factor_contributions}}.}
+
+\item{round}{Number of digits used for percentage labels.}
 }
 \value{
 \strong{ggplot2} with bar geometries.
