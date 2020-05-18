@@ -12,7 +12,7 @@
 read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Load data
-  # Supression is for two missing column names
+  # Suppression is for two missing column names
   suppressWarnings(
     df <- readr::read_csv(
       file, 
@@ -49,5 +49,14 @@ read_pmf_contributions <- function(file, tz = "UTC") {
 #' 
 #' @export
 tidy_pmf_contributions <- function(df) {
-  tidyr::pivot_longer(df, -c(model_run, date), names_to = "factor")
+  
+  # Make longer and add sum
+  df %>% 
+    tidyr::pivot_longer(-c(model_run, date), names_to = "factor") %>% 
+    group_by(model_run, 
+             date) %>% 
+    mutate(value_sum = sum(value, na.rm = TRUE),
+           contribution = value / value_sum) %>% 
+    ungroup()
+  
 }

@@ -3,26 +3,25 @@
 \name{extract_pmf_mass_factor_contributions}
 \alias{extract_pmf_mass_factor_contributions}
 \title{Function to extract PMF factor contributions from the return of
-\code{\link{read_pmf_source_contributions}}.}
+\code{\link{read_pmf_factor_profiles}}.}
 \usage{
-extract_pmf_mass_factor_contributions(df, model_run, species = "mass")
+extract_pmf_mass_factor_contributions(df, value_mass = NA)
 }
 \arguments{
-\item{df}{Tibble from \code{\link{read_pmf_source_contributions}}.}
+\item{df}{Tibble from \code{\link{read_pmf_factor_profiles}}.}
 
-\item{model_run}{Model run extract contributions from.}
-
-\item{species}{Which species to extract contributions for. Defaults to mass.}
+\item{value_mass}{An optional value to use for fully accounted for mass in 
+the calculations.}
 }
 \value{
 Tibble.
 }
 \description{
 Function to extract PMF factor contributions from the return of
-\code{\link{read_pmf_source_contributions}}.
+\code{\link{read_pmf_factor_profiles}}.
 }
 \seealso{
-\code{\link{read_pmf_source_contributions}}, 
+\code{\link{read_pmf_factor_profiles}}, 
 \code{\link{plot_pmf_mass_factor_contributions}}
 }
 \author{
