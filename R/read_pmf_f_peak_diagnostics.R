@@ -11,6 +11,9 @@
 #' @export
 read_pmf_f_peak_diagnostics <- function(file, tz = "UTC") {
   
+  # Return empty list if passed nothing
+  if (length(file) == 0) return(list())
+  
   # Load file as text
   text <- readr::read_lines(file)
   

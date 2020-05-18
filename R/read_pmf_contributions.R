@@ -22,6 +22,12 @@ read_pmf_contributions <- function(file, tz = "UTC") {
     )
   )
   
+  # Where do the concentration tables start? 
+  index_concentration_start <- stringr::str_which(df$X1, "conc. units")[1]
+  index_concentration_start <- if_else(
+    is.na(index_concentration_start), nrow(df) + 1L, index_concentration_start
+  )
+  
   # Clean names
   names(df)[1:2] <- c("model_run", "date")
   names(df)[-1:-2] <- stringr::str_to_lower(names(df)[-1:-2])
@@ -29,10 +35,19 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Parse dates
   df <- df %>% 
+    tibble::rowid_to_column() %>% 
+    mutate(
+      unit = if_else(rowid < !!index_concentration_start, "normalised", "concentrations")
+    ) %>% 
     filter(!stringr::str_detect(model_run, "Factor Contributions"),
            !is.na(date)) %>% 
     dplyr::mutate_all(type.convert, as.is = TRUE) %>% 
-    mutate(date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
+    mutate(date = lubridate::mdy_hm(date, tz = tz, truncated = 3)) %>% 
+    select(-rowid) %>% 
+    select(model_run,
+           unit,
+           date,
+           everything())
   
   return(df)
   
@@ -52,8 +67,9 @@ tidy_pmf_contributions <- function(df) {
   
   # Make longer and add sum
   df %>% 
-    tidyr::pivot_longer(-c(model_run, date), names_to = "factor") %>% 
+    tidyr::pivot_longer(-c(model_run, unit, date), names_to = "factor") %>% 
     group_by(model_run, 
+             unit,
              date) %>% 
     mutate(value_sum = sum(value, na.rm = TRUE),
            contribution = value / value_sum) %>% 

@@ -21,10 +21,10 @@ read_pmf_factor_profiles <- function(file) {
   index_end <- if_else(is.na(index_end), length(text_filter), index_end)
   
   # Split into pieces then parse the tabular data
-  # Message supression is for missing variable names
+  # Message suppression is for missing variable names
   suppressWarnings(
     df <- purrr::map2(index_start, index_end, ~text_filter[.x:.y]) %>% 
-      purrr::map_dfr(readr::read_csv, .id = "table") %>% 
+      purrr::map_dfr(readr::read_csv, na = "*", .id = "table") %>% 
       mutate(table = as.integer(table))
   )
   
