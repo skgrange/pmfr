@@ -13,6 +13,12 @@ list_epa_pmf_outputs <- function(directory) {
   file_list <- list.files(directory, full.names = TRUE)
   
   # Filter list to files
+  file_concentrations <- file_list %>% 
+    stringr::str_subset("concentrations")
+  
+  file_errors <- file_list %>% 
+    stringr::str_subset("errors")
+  
   file_diagnostics <- file_list %>% 
     stringr::str_subset("diagnostics.csv") %>% 
     stringr::str_subset("Fpeak", negate = TRUE)
@@ -40,6 +46,8 @@ list_epa_pmf_outputs <- function(directory) {
   
   # Build list
   list_files <- list(
+    concentrations = file_concentrations,
+    errors = file_errors,
     diagnostics = file_diagnostics,
     residuals = file_residuals,
     factor_profiles = file_factor_profiles,
