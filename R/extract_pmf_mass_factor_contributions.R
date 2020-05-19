@@ -16,8 +16,9 @@
 #' @export 
 extract_pmf_mass_factor_contributions <- function(df, value_mass = NA) {
   
-  # Check input
+  # Check inputs
   stopifnot(length(value_mass) == 1)
+  stopifnot(is.numeric(df$factor))
   
   # Filter table 
   df <- df %>% 
@@ -34,7 +35,7 @@ extract_pmf_mass_factor_contributions <- function(df, value_mass = NA) {
       summarise(value = sum(value, na.rm = TRUE)) %>% 
       ungroup() %>% 
       mutate(value = !!value_mass - value,
-             factor = "missing")
+             factor = 0L)
     
     # Bind
     df <- bind_rows(df, df_sums)

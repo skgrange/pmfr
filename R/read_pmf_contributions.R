@@ -24,6 +24,13 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Where do the concentration tables start? 
   index_concentration_start <- stringr::str_which(df$X1, "conc. units")[1]
+  
+  # Raise message if no concentration data, this is key for analysis
+  if (is.na(index_concentration_start)) {
+    message("No concentration data detected, these are usually required for analysis...")
+  }
+  
+  # If missing, all data will be normalised
   index_concentration_start <- if_else(
     is.na(index_concentration_start), nrow(df) + 1L, index_concentration_start
   )
