@@ -1,0 +1,49 @@
+#' Function to read EPA PMF base model bootstrapped errors and statistics. 
+#' 
+#' @param file File to read. 
+#' 
+#' @author Stuart K. Grange
+#' 
+#' @return A named list containing tibbles. 
+#' 
+#' @export
+read_pmf_base_error_bootstraps <- function(file) {
+  
+  # Read file as text
+  text <- readr::read_lines(file)
+  
+  # Get first block, suppression is for missing name warning
+  df_mapping <- suppressWarnings(
+    text[2:(stringr::str_which(text, "^Bootstrapping and Pulling") - 1)] %>% 
+      readr::read_csv() %>% 
+      rename(bootstrap_factor = X1) %>% 
+      purrr::set_names(str_to_underscore) %>% 
+      mutate(bootstrap_factor = str_to_underscore(bootstrap_factor))  
+  )
+  
+  # Get start of second table
+  index_start <- stringr::str_which(text, "^Columns are")
+  
+  names_bootstrap <- text[index_start] %>% 
+    stringr::str_split_fixed(":", 2) %>% 
+    .[, 2] %>% 
+    stringr::str_split(", ") %>% 
+    .[[1]] %>% 
+    stringr::str_trim() %>% 
+    str_to_underscore()
+  
+  df_bootstraps <- text[(index_start + 1):length(text)] %>% 
+    readr::read_csv(col_names = FALSE)
+  
+  # Set names
+  names(df_bootstraps)[1:length(names_bootstrap)] <- names_bootstrap
+  
+  # Build return
+  list_return <- list(
+    mapping = df_mapping,
+    bootstraps = df_bootstraps
+  )
+  
+  return(list_return)
+  
+}

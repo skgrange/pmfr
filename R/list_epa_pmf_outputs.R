@@ -4,7 +4,7 @@
 #' 
 #' @author Stuart K. Grange
 #' 
-#' @return Named list containing \strong{fs} paths. 
+#' @return Named list containing \strong{fs} paths.
 #' 
 #' @export
 list_epa_pmf_outputs <- function(directory) {
@@ -38,6 +38,9 @@ list_epa_pmf_outputs <- function(directory) {
   file_source_contributions <- file_list %>% 
     stringr::str_subset("sourcecontributions.xls")
   
+  file_bootstraps <- file_list %>% 
+    stringr::str_subset("profile_boot.csv")
+  
   file_f_peak_diagnostics <- file_list %>% 
     stringr::str_subset("Fpeak_diagnostics")
   
@@ -54,6 +57,7 @@ list_epa_pmf_outputs <- function(directory) {
     contributions = file_contributions,
     run_comparisons = file_run_comparisons,
     source_contributions = file_source_contributions,
+    bootstrap_errors = file_bootstraps,
     f_peak_diagnostics = file_f_peak_diagnostics,
     f_peak_error_estimates = file_f_peak_error_estimates
   ) %>% 
