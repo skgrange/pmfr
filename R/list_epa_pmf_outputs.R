@@ -38,6 +38,9 @@ list_epa_pmf_outputs <- function(directory) {
   file_source_contributions <- file_list %>% 
     stringr::str_subset("sourcecontributions.xls")
   
+  file_error_estimations <- file_list %>% 
+    stringr::str_subset("BaseErrorEstimationSummary.csv")
+  
   file_bootstraps <- file_list %>% 
     stringr::str_subset("profile_boot.csv")
   
@@ -57,6 +60,7 @@ list_epa_pmf_outputs <- function(directory) {
     contributions = file_contributions,
     run_comparisons = file_run_comparisons,
     source_contributions = file_source_contributions,
+    error_estimations = file_error_estimations,
     bootstrap_errors = file_bootstraps,
     f_peak_diagnostics = file_f_peak_diagnostics,
     f_peak_error_estimates = file_f_peak_error_estimates

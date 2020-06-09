@@ -34,6 +34,9 @@ read_pmf_base_error_estimations <- function(file) {
 read_pmf_base_error_estimations_displaced <- function(text) {
   
   index_start <- stringr::str_which(text, "DISP Displaced Species") + 1L
+  
+  if (is.na(index_start[1])) return(tibble())
+  
   index_end <- stringr::str_which(text, "DISP Diagnostics") - 2L
   x <- text[index_start:index_end]
   x <- stringr::str_remove(x, "^,")
@@ -45,6 +48,9 @@ read_pmf_base_error_estimations_displaced <- function(text) {
 read_pmf_base_error_estimations_diagnostics <- function(text) {
   
   index_start <- stringr::str_which(text, "DISP Diagnostics") + 1L
+  
+  if (is.na(index_start[1])) return(tibble())
+  
   index_end <- stringr::str_which(text, "Concentrations for Factor")[1] - 2L
   
   df <- text[index_start:index_end] %>% 
@@ -71,7 +77,7 @@ read_pmf_base_error_estimations_concentrations <- function(text) {
   index_start <- stringr::str_which(text, "Concentrations for Factor")[1]
   index_end <- stringr::str_which(text, "Percent of Species")[1] - 1
   
-  # 
+  # Filter text
   text_filter <- text[index_start:index_end]
   
   index_start_table <- stringr::str_which(text_filter, "Concentrations") + 1L
@@ -95,7 +101,12 @@ read_pmf_base_error_estimations_percent_sum <- function(text) {
   
   # Isolate table
   index_start <- stringr::str_which(text, "Percent of Species Sum")[1]
-  index_end <- stringr::str_which(text, "Percent of Factor Total")[1] - 1
+  index_end <- stringr::str_which(text, "Percent of Factor Total")[1] - 1L
+  
+  # Try an alternative
+  if (is.na(index_end)) {
+    index_end <- stringr::str_which(text, "Percent of Total Variable")[1] - 1L
+  }
   
   # Isolate table
   text_filter <- text[index_start:index_end]
@@ -121,6 +132,8 @@ read_pmf_base_error_estimations_percent_total <- function(text) {
   
   # Isolate table
   index_start <- stringr::str_which(text, "Percent of Factor Total")[1]
+  
+  if (is.na(index_start)) return(tibble())
 
   # Isolate table
   text_filter <- text[index_start:length(text)]
@@ -145,14 +158,18 @@ read_pmf_base_error_estimations_percent_total <- function(text) {
 read_pmf_base_error_estimations_tables <- function(text, index_start, index_end,
                                                   comparison) {
   
-  df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, .id = "factor") %>% 
-    mutate(factor = as.integer(factor),
-           comparison = !!comparison) %>% 
-    select(comparison,
-           everything()) %>% 
-    dplyr::mutate_if(is.logical, as.numeric)
-  
+  # Suppression is for trailing columns
+  suppressWarnings(
+    df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
+      purrr::map_dfr(readr::read_csv, .id = "factor") %>% 
+      mutate(factor = as.integer(factor),
+             comparison = !!comparison) %>% 
+      select(comparison,
+             everything()) %>% 
+      dplyr::mutate_if(is.character, type.convert, as.is = TRUE) %>% 
+      dplyr::mutate_if(is.logical, as.numeric) 
+  )
+
   # Give name
   names(df)[-1:-2] <- c(
     "species", "base_value", "bootstrap_5th", "bootstrap_25th", "bootstrap_50th", 
