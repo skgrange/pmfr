@@ -6,7 +6,7 @@
 #' 
 #' @author Stuart K. Grange
 #' 
-#' @return Named list containing tibbles. 
+#' @return Named list containing tibbles and an integer. 
 #' 
 #' @export
 read_pmf_diagnostics <- function(file, tz = "UTC") {
@@ -26,6 +26,17 @@ read_pmf_diagnostics <- function(file, tz = "UTC") {
     scaled_outlier_residuals_by_species = format_scaled_residuals_by_species(text, tz = tz),
     scaled_outlier_residuals_by_date = format_scaled_residuals_by_date(text, tz = tz)
   )
+  
+  # Find and best model run
+  model_run_best <- list_diagnostics %>% 
+    purrr::pluck("base_run_summary_table") %>% 
+    filter(converged) %>% 
+    arrange(q_robust) %>% 
+    slice(1) %>% 
+    pull(model_run)
+  
+  # Add extra piece
+  list_components <- c(list_components, model_run_best = model_run_best)
   
   return(list_components)
   
@@ -139,7 +150,8 @@ format_base_run_summary_table <- function(text) {
         )
     ) %>% 
     mutate(model_run = as.integer(model_run),
-           converged = if_else(converged == "Yes", TRUE, FALSE))
+           converged = if_else(converged == "Yes", TRUE, FALSE),
+           q_true_robust_ratio = q_true / q_robust)
   
   return(df)
   

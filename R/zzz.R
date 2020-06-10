@@ -12,7 +12,8 @@ if (getRversion() >= "2.15.1") {
     "f_peak_run", "base_run", "residual_type", "configuration_file",
     "bootstrap_factor", "error_estimation_type", "f_peak_number", 
     "number_of_steps", "contribution", "contribution_percent", "label", 
-    "q_robust", "contribution_label", "method_type", "value_sum", "unit"
+    "q_robust", "contribution_label", "method_type", "value_sum", "unit",
+    "q_true", "list_diagnostics"
   )
 
   # Squash the notes

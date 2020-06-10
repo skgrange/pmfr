@@ -12,7 +12,7 @@ read_pmf_diagnostics(file, tz = "UTC")
 \item{tz}{Time zone the dates are stored in.}
 }
 \value{
-Named list containing tibbles.
+Named list containing tibbles and an integer.
 }
 \description{
 Function to read PMF diagnostics exported from the EPA PMF tool.
