@@ -28,7 +28,7 @@ read_pmf_diagnostics <- function(file, tz = "UTC") {
   )
   
   # Find and best model run
-  model_run_best <- list_diagnostics %>% 
+  model_run_best <- list_components %>% 
     purrr::pluck("base_run_summary_table") %>% 
     filter(converged) %>% 
     arrange(q_robust) %>% 
