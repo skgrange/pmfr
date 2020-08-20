@@ -9,7 +9,7 @@ read_pmf_inputs(file_concentrations, file_errors, tz = "UTC")
 \arguments{
 \item{file_concentrations}{File name of concentration file.}
 
-\item{file_errors}{File name of error file.}
+\item{file_errors}{File name of error file. This is optional.}
 
 \item{tz}{Time zone of dates.}
 }
