@@ -69,13 +69,13 @@ read_pmf_contributions <- function(file, tz = "UTC") {
              !is.na(date)) %>% 
       select(-tail(names(.), 2)) %>% 
       purrr::set_names(names_concentrations) %>% 
-      mutate(across(dplyr::starts_with("factor_"), type.convert, as.is = TRUE),
+      mutate(across(everything(), type.convert, as.is = TRUE),
              unit = "concentrations")
     
     # Bind the two tables
     df <- df %>% 
       filter(unit != "concentrations") %>% 
-      mutate(across(dplyr::starts_with("factor_"), type.convert, as.is = TRUE)) %>% 
+      mutate(across(everything(), type.convert, as.is = TRUE)) %>% 
       bind_rows(df_concentrations)
     
   } else {
