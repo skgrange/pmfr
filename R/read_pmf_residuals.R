@@ -14,7 +14,7 @@ read_pmf_residuals <- function(file, tz = "UTC") {
   # Read as text
   text <- readr::read_lines(file, progress = FALSE)
   
-  # Get indicies
+  # Get indices
   index_start <- stringr::str_which(text, "Residuals from Base") + 1L
   index_end <- dplyr::lead(index_start) - 2L
   index_end <- if_else(is.na(index_end), length(text), index_end)
@@ -38,6 +38,9 @@ read_pmf_residuals <- function(file, tz = "UTC") {
            base_run = as.integer(base_run),
            date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
   
+  # Rename id if present
+  if ("Sample_IDs" %in% names(df)) df <- rename(df, id = Sample_IDs)
+  
   return(df)
   
 }
@@ -53,5 +56,17 @@ read_pmf_residuals <- function(file, tz = "UTC") {
 #' 
 #' @export
 tidy_pmf_residuals <- function(df) {
-  tidyr::pivot_longer(df, -c(residual_type, base_run, date), names_to = "species")
+  
+  # Test for id
+  if ("id" %in% names(df)) {
+    id_variables <- c("residual_type", "base_run", "id", "date")
+  } else {
+    id_variables <- c("residual_type", "base_run", "date")
+  }
+  
+  # Make longer
+  df <- tidyr::pivot_longer(df, -dplyr::all_of(id_variables), names_to = "species")
+  
+  return(df)
+  
 }

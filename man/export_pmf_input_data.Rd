@@ -9,7 +9,8 @@ export_pmf_input_data(
   file,
   date_check = TRUE,
   format_date = TRUE,
-  zero_check = TRUE
+  zero_check = TRUE,
+  id_variable = NA
 )
 }
 \arguments{
@@ -24,9 +25,12 @@ for the EPA PMF tool so this checking logic can be disabled if desired.}
 
 \item{zero_check}{Should the table be checked for values less than and equal 
 to 0?}
+
+\item{id_variable}{Variable name in \code{df} which contains an identifying
+variable. This is optional.}
 }
 \value{
-Invisible tibble.
+Invisible \code{df}.
 }
 \description{
 Function to export a data table for use with the EPA PMF tool.

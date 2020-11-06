@@ -161,7 +161,7 @@ format_base_run_summary_table <- function(text) {
 format_ks_test <- function(text) {
   
   index_start <- stringr::str_which(text, "Regression diagnostics") + 1
-  index_end <- stringr::str_which(text, "dates by species") - 1
+  index_end <- stringr::str_which(text, "dates by species|IDs by species") - 1
   
   # Filter to the table pieces, then read as a data frame
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
@@ -221,13 +221,23 @@ format_scaled_residual_analysis_sum_d <- function(text) {
 
 format_scaled_residuals_by_species <- function(text, tz) {
  
-  index_start <- stringr::str_which(text, "dates by species") + 1
-  index_end <- stringr::str_which(text, "species by date") - 1
+  index_start <- stringr::str_which(text, "dates by species|IDs by species") + 1
+  index_end <- stringr::str_which(text, "species by date|species by ID") - 1
   
-  # Filter to the table pieces, then read as a data frame
+  # Filter to the table pieces, then read as a tibble
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
-    purrr::set_names(c("model_run", "species", "date", "residual")) %>% 
+    purrr::map_dfr(readr::read_csv, .id = "model_run")
+  
+  # When the run has an id variable
+  if ("IDs" %in% names(df)) {
+    names <- c("model_run", "species", "id", "date", "residual")
+  } else {
+    names <- c("model_run", "species", "date", "residual")
+  }
+  
+  # Set names and sort out data types
+  df <- df %>% 
+    purrr::set_names(names) %>% 
     mutate(model_run = as.integer(model_run),
            date = lubridate::mdy_hm(date, tz = tz, truncated = 3))
   
@@ -241,6 +251,9 @@ format_scaled_residuals_by_date <- function(text, tz) {
   # Get indices
   index_start <- stringr::str_which(text, "species by date") + 1
   index_end <- stringr::str_which(text, "\\*\\*\\*\\* Analysis of") - 1
+  
+  # This table is not present when an id is used
+  if (length(index_start) == 0) return(tibble())
   
   # Drop first element which is the header for the section and the final element
   # is the end of the last table
