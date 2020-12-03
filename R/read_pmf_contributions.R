@@ -2,7 +2,7 @@
 #' 
 #' @param file File to read. 
 #' 
-#' @param tz Time-zone dates are stored in. 
+#' @param tz Time-zone which the dates are stored in. 
 #' 
 #' @author Stuart K. Grange
 #' 
@@ -90,7 +90,10 @@ read_pmf_contributions <- function(file, tz = "UTC") {
 
   # Parse dates and tidy up a bit
   df <- df %>% 
-    mutate(date = lubridate::mdy_hm(date, tz = tz, truncated = 3)) %>% 
+    mutate(
+      date = lubridate::mdy_hm(date, tz = tz, truncated = 3),
+      across(dplyr::starts_with("factor_"), ~if_else(. == -999, NA_real_, .))
+    ) %>% 
     select(-rowid) %>% 
     select(model_run,
            unit,

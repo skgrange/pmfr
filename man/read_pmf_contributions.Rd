@@ -9,7 +9,7 @@ read_pmf_contributions(file, tz = "UTC")
 \arguments{
 \item{file}{File to read.}
 
-\item{tz}{Time-zone dates are stored in.}
+\item{tz}{Time-zone which the dates are stored in.}
 }
 \value{
 Tibble.
