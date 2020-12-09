@@ -191,6 +191,7 @@ format_constrained_factor_contributions <- function(text, tz) {
     select(-rowid) %>% 
     filter(!stringr::str_detect(model_run, "Factor|Total")) %>% 
     mutate(date = lubridate::mdy_hms(date, tz = tz, truncated = 3),
+           model_run = as.integer(model_run), 
            model_type = "constrained") %>% 
     relocate(model_type,
              model_run,
