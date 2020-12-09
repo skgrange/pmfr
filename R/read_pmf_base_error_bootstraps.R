@@ -18,7 +18,8 @@ read_pmf_base_error_bootstraps <- function(file) {
       readr::read_csv() %>% 
       rename(bootstrap_factor = X1) %>% 
       purrr::set_names(str_to_underscore) %>% 
-      mutate(bootstrap_factor = str_to_underscore(bootstrap_factor))  
+      mutate(bootstrap_factor = str_to_underscore(bootstrap_factor)) %>% 
+      dplyr::rename_all(~stringr::str_remove(., "^base_"))
   )
   
   # Get start of second table

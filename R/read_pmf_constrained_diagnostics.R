@@ -11,6 +11,9 @@
 #' @export
 read_pmf_constrained_diagnostics <- function(file, tz = "UTC") {
   
+  # Return empty list if no file is passed
+  if (length(file) == 0) return(list())
+  
   # Read file as text
   text <- readr::read_lines(file)
   

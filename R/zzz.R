@@ -13,7 +13,8 @@ if (getRversion() >= "2.15.1") {
     "bootstrap_factor", "error_estimation_type", "f_peak_number", 
     "number_of_steps", "contribution", "contribution_percent", "label", 
     "q_robust", "contribution_label", "method_type", "value_sum", "unit",
-    "q_true", "list_diagnostics", "Sample_IDs", "%_d_q", "model_type"
+    "q_true", "list_diagnostics", "Sample_IDs", "%_d_q", "model_type", "x", "y",
+    "unmapped"
   )
 
   # Squash the notes

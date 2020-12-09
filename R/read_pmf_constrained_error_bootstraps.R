@@ -9,6 +9,9 @@
 #' @export
 read_pmf_constrained_error_bootstraps <- function(file) {
   
+  # Return empty list if no file is passed
+  if (length(file) == 0) return(list())
+  
   # Read file as text
   text <- readr::read_lines(file)
   
