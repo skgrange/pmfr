@@ -92,13 +92,14 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   df <- df %>% 
     mutate(
       date = lubridate::mdy_hm(date, tz = tz, truncated = 3),
-      across(dplyr::starts_with("factor_"), ~if_else(. == -999, NA_real_, .))
+      across(dplyr::starts_with("factor_"), ~if_else(. == -999, NA_real_, .)),
+      model_type = "base"
     ) %>% 
     select(-rowid) %>% 
-    select(model_run,
-           unit,
-           date,
-           everything())
+    relocate(model_type,
+             model_run,
+             unit,
+             date)
   
   return(df)
   
