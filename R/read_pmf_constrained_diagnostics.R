@@ -147,8 +147,10 @@ format_constrained_factor_profiles <- function(text) {
     ) %>% 
     select(-rowid) %>% 
     filter(!stringr::str_detect(model_run, "^Factor")) %>% 
-    mutate(model_run = as.integer(model_run)) %>% 
-    relocate(factor_profile)
+    mutate(model_run = as.integer(model_run),
+           model_type = "constrained") %>% 
+    relocate(model_type,
+             factor_profile)
   
   return(df)
   

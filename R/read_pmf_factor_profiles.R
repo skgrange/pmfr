@@ -9,6 +9,9 @@
 #' @export
 read_pmf_factor_profiles <- function(file) {
   
+  # Return empty tibble if no file is passed
+  if (length(file) == 0) return(tibble())
+  
   # Read as character vector
   text <- readr::read_lines(file)
   
@@ -73,9 +76,11 @@ read_pmf_factor_profiles <- function(file) {
     
   }
   
-  # Select what is needed
+  # Order the variables
   df <- df %>% 
-    select(factor_profile,
+    mutate(model_type = "base") %>% 
+    select(model_type,
+           factor_profile,
            model_run,
            species,
            dplyr::starts_with("factor_"))
@@ -96,8 +101,15 @@ read_pmf_factor_profiles <- function(file) {
 #' @export
 tidy_pmf_profiles <- function(df) {
   
+  # Set id variables
+  id_variables <- c("factor_profile", "model_run", "species")
+  
+  # Add the extra if it exists, this variable was not included in the past
+  if ("model_type" %in% names(df)) id_variables <- c("model_type", id_variables)
+  
+  # Make the table longer
   df %>% 
-    tidyr::pivot_longer(-c(factor_profile, model_run, species), names_to = "factor") %>% 
+    tidyr::pivot_longer(-dplyr::all_of(id_variables), names_to = "factor") %>% 
     arrange(factor,
             factor_profile, 
             species)
