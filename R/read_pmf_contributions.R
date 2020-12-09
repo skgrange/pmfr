@@ -123,6 +123,11 @@ tidy_pmf_contributions <- function(df) {
     id_variables <- c("model_run", "unit", "date")
   }
   
+  # Test for model type too
+  if ("model_type" %in% names(df)) {
+    id_variables <- c("model_type", id_variables)
+  }
+  
   # Make longer and add the sum and contributions
   df <- df %>% 
     tidyr::pivot_longer(-dplyr::all_of(id_variables), names_to = "factor") %>% 

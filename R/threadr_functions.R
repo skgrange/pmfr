@@ -1,4 +1,4 @@
-# From threadr
+# Functions pulled from threadr
 str_to_underscore <- function(x) {
   
   x <- gsub("([A-Za-z])([A-Z])([a-z])", "\\1_\\2\\3", x)
@@ -13,3 +13,11 @@ str_to_underscore <- function(x) {
   return(x)
   
 }
+
+
+str_rm_round_brackets <- function(x) {
+  stringr::str_replace_all(x, "\\s*\\([^\\)]+\\)", "")
+}
+
+
+na_locf <- function(x, na.rm = FALSE) zoo::na.locf(x, na.rm = na.rm)

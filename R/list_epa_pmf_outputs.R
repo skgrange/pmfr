@@ -19,9 +19,14 @@ list_epa_pmf_outputs <- function(directory) {
   file_errors <- file_list %>% 
     stringr::str_subset("errors")
   
+  # There can be two diagnostic files here if constraints have been used
   file_diagnostics <- file_list %>% 
     stringr::str_subset("diagnostics.csv") %>% 
-    stringr::str_subset("Fpeak", negate = TRUE)
+    stringr::str_subset("Fpeak|Constrained", negate = TRUE)
+  
+  file_diagnostics_constrained <- file_list %>% 
+    stringr::str_subset("diagnostics.csv") %>% 
+    stringr::str_subset("Constrained")
   
   file_residuals <- file_list %>% 
     stringr::str_subset("residuals.csv")
@@ -41,8 +46,14 @@ list_epa_pmf_outputs <- function(directory) {
   file_error_estimations <- file_list %>% 
     stringr::str_subset("BaseErrorEstimationSummary.csv")
   
+  # There can be two diagnostic files here if constraints have been used
   file_bootstraps <- file_list %>% 
-    stringr::str_subset("profile_boot.csv")
+    stringr::str_subset("profile_boot.csv") %>% 
+    stringr::str_subset("Gcon", negate = TRUE)
+    
+  file_bootstraps_constrained <- file_list %>% 
+    stringr::str_subset("profile_boot.csv") %>% 
+    stringr::str_subset("Gcon")
   
   file_f_peak_diagnostics <- file_list %>% 
     stringr::str_subset("Fpeak_diagnostics")
@@ -55,6 +66,7 @@ list_epa_pmf_outputs <- function(directory) {
     concentrations = file_concentrations,
     errors = file_errors,
     diagnostics = file_diagnostics,
+    diagnostics_constrained = file_diagnostics_constrained,
     residuals = file_residuals,
     factor_profiles = file_factor_profiles,
     contributions = file_contributions,
@@ -62,6 +74,7 @@ list_epa_pmf_outputs <- function(directory) {
     source_contributions = file_source_contributions,
     error_estimations = file_error_estimations,
     bootstrap_errors = file_bootstraps,
+    bootstrap_errors_constrained = file_bootstraps_constrained,
     f_peak_diagnostics = file_f_peak_diagnostics,
     f_peak_error_estimates = file_f_peak_error_estimates
   ) %>% 
