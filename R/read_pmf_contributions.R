@@ -63,13 +63,20 @@ read_pmf_contributions <- function(file, tz = "UTC") {
     # Create vector of new names
     names_concentrations <- stringr::str_subset(names(df), "^id|unit", negate = TRUE)
     
-    # Select the table and drop the trailing variables
+    # Get the id vector
+    id_vector <- df %>% 
+      filter(unit == "normalised") %>% 
+      pull(id)
+    
+    # Select the table, drop the trailing variables, and add the id vector from
+    # the normalised unit
     df_concentrations <- df %>% 
       filter(unit == "concentrations",
              !is.na(date)) %>% 
       select(-tail(names(.), 2)) %>% 
       purrr::set_names(names_concentrations) %>% 
       mutate(across(everything(), type.convert, as.is = TRUE),
+             id = !!id_vector,
              unit = "concentrations")
     
     # Bind the two tables

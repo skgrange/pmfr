@@ -15,6 +15,11 @@ read_pmf_factor_profiles <- function(file) {
   # Read as character vector
   text <- readr::read_lines(file)
   
+  # # Replace tabs with commas, the text will be in csv format
+  # if (stringr::str_detect(text[10], "\t")) {
+  #   text <- stringr::str_replace_all(text, "\t", ",")
+  # }
+  
   # Drop missing lines
   text_filter <- text[text != ""]
   text_filter <- stringr::str_subset(text_filter, "^Factor Profiles", negate = TRUE)
