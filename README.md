@@ -12,7 +12,7 @@ To install the development version, install [**remotes**](https://github.com/r-l
 
 ```
 # Install pmfr
-remotes::install_packages("skgrange/pmfr")
+remotes::install_github("skgrange/pmfr")
 ```
 
 ## Usage
