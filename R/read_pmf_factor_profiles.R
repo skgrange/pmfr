@@ -15,11 +15,6 @@ read_pmf_factor_profiles <- function(file) {
   # Read as character vector
   text <- readr::read_lines(file)
   
-  # # Replace tabs with commas, the text will be in csv format
-  # if (stringr::str_detect(text[10], "\t")) {
-  #   text <- stringr::str_replace_all(text, "\t", ",")
-  # }
-  
   # Drop missing lines
   text_filter <- text[text != ""]
   text_filter <- stringr::str_subset(text_filter, "^Factor Profiles", negate = TRUE)
@@ -99,12 +94,16 @@ read_pmf_factor_profiles <- function(file) {
 #' 
 #' @param df Tibble/data frame from \code{\link{read_pmf_factor_profiles}}. 
 #' 
+#' @param factor_to_integer Should the factor variable be made an integer?
+#' 
+#' @param x A string in the format \code{"factor_*"} to be made an integer. 
+#' 
 #' @author Stuart K. Grange
 #' 
 #' @return Tibble. 
 #' 
 #' @export
-tidy_pmf_profiles <- function(df) {
+tidy_pmf_profiles <- function(df, factor_to_integer = FALSE) {
   
   # Set id variables
   id_variables <- c("factor_profile", "model_run", "species")
@@ -113,10 +112,26 @@ tidy_pmf_profiles <- function(df) {
   if ("model_type" %in% names(df)) id_variables <- c("model_type", id_variables)
   
   # Make the table longer
-  df %>% 
+  df <- df %>% 
     tidyr::pivot_longer(-dplyr::all_of(id_variables), names_to = "factor") %>% 
     arrange(factor,
             factor_profile, 
             species)
   
+  # Remove prefix and make factor an integer
+  if (factor_to_integer) {
+    df <- mutate(df, factor = str_factor_to_integer(factor))
+  }
+  
+  return(df)
+  
+}
+
+
+#' @rdname tidy_pmf_profiles
+#' @export
+str_factor_to_integer <- function(x) {
+  x %>% 
+    stringr::str_remove("^factor_") %>% 
+    as.integer()
 }

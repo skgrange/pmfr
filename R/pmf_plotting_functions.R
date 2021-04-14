@@ -1,27 +1,40 @@
 #' Function to plot PMF factor profiles using data from 
-#' \code{\link{read_pmf_factor_profiles}}. 
+#' \code{\link{read_pmf_factor_profiles}} and \code{\link{tidy_pmf_profiles}}. 
 #' 
 #' @author Stuart K. Grange
 #' 
-#' @param df Tibble from \code{\link{read_pmf_factor_profiles}}. 
+#' @param df Tibble from \code{\link{tidy_pmf_profiles}}. 
 #' 
 #' @param by_model_run Should the plots be faceted by model runs? 
+#' 
+#' @param x_label_angle What angle should the x-axis labels be presented in? If
+#' your labels are long, \code{45} can be useful. 
 #' 
 #' @return ggplot2 with bar geometries. 
 #' 
 #' @export
-plot_pmf_factor_profile <- function(df, by_model_run = TRUE) {
+plot_pmf_factor_profile <- function(df, by_model_run = TRUE, x_label_angle = 0) {
   
-  # Filter to percentage
+  # Check if the input has been exposed to tidy_pmf_profiles
+  if ("factor_1" %in% names(df)) {
+    stop(
+      "`factor_*` varaibles detected, `tidy_pmf_profiles` needs to be used first.", 
+      call. = FALSE
+    )
+  }
+  
+  # Filter to percentages
   df <- filter(df, factor_profile == "percentage_of_species_sum")
   
   # Build plot
   plot <- df %>% 
+    mutate(factor = as.factor(factor)) %>% 
     ggplot(aes(species, value, fill = factor)) +
     geom_col() + 
     theme_minimal() + 
     ylab("Species contribution (%)") + 
-    xlab("Species")
+    xlab("Species") +
+    theme(axis.text.x = ggplot2::element_text(angle = x_label_angle, hjust = 1))
   
   # Facet
   if (by_model_run) {
@@ -157,6 +170,7 @@ plot_pmf_mass_factor_contributions <- function(df, round = 1) {
   
   # Stacked bar chart
   plot <- df %>% 
+    mutate(factor = as.factor(factor)) %>% 
     ggplot(aes("", contribution, fill = factor)) + 
     geom_col() + 
     geom_label(

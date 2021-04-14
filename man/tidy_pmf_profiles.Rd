@@ -2,12 +2,19 @@
 % Please edit documentation in R/read_pmf_factor_profiles.R
 \name{tidy_pmf_profiles}
 \alias{tidy_pmf_profiles}
+\alias{str_factor_to_integer}
 \title{Function to reshape PMF factor profiles into tidy data.}
 \usage{
-tidy_pmf_profiles(df)
+tidy_pmf_profiles(df, factor_to_integer = FALSE)
+
+str_factor_to_integer(x)
 }
 \arguments{
 \item{df}{Tibble/data frame from \code{\link{read_pmf_factor_profiles}}.}
+
+\item{factor_to_integer}{Should the factor variable be made an integer?}
+
+\item{x}{A string in the format \code{"factor_*"} to be made an integer.}
 }
 \value{
 Tibble.
