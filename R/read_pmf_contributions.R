@@ -27,7 +27,7 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Raise message if no concentration data, this is key for analysis
   if (is.na(index_concentration_start)) {
-    message("No concentration data detected, these are usually required for analysis...")
+    message("`Total mass` variable was not used in the EPA PMF tool, only normalised concentrations are available...")
   }
   
   # If missing, all data will be normalised
