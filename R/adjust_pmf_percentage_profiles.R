@@ -19,11 +19,11 @@ adjust_pmf_percentage_profiles <- function(df) {
   stopifnot(all(name_test))
   
   # Filter to unit
-  df <- filter(df, factor_profile == "percentage_of_factor_total")
+  df <- filter(df, factor_profile == "percentage_of_total_variable")
   
   # Calculate the sum of the percentages
   df_sums <- df %>% 
-    filter(factor_profile == "percentage_of_factor_total") %>% 
+    filter(factor_profile == "percentage_of_total_variable") %>% 
     group_by(model_type,
              factor_profile,
              model_run,
@@ -38,7 +38,7 @@ adjust_pmf_percentage_profiles <- function(df) {
       by = c("model_type", "factor_profile", "model_run", "factor")
     )   %>% 
     mutate(value = value * (1 / (value_sum / 100)),
-           factor_profile = "percentage_of_factor_total_adjusted")
+           factor_profile = "percentage_of_total_variable_adjusted")
   
   return(df)
   

@@ -51,7 +51,7 @@ read_pmf_factor_profiles <- function(file) {
         factor_profile = dplyr::case_when(
           table == 1 ~ "concentration_of_species",
           table == 2 ~ "percentage_of_species_sum",
-          table == 3 ~ "percentage_of_factor_total"
+          table == 3 ~ "percentage_of_total_variable"
         )
       )
     
@@ -65,7 +65,7 @@ read_pmf_factor_profiles <- function(file) {
       mutate(
         factor_profile = c(
           "concentration_of_species", "percentage_of_species_sum",
-          "percentage_of_factor_total"
+          "percentage_of_total_variable"
         )
       )
     
