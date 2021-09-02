@@ -18,3 +18,14 @@ remotes::install_github("skgrange/pmfr")
 ## Usage
 
 **pmfr** contains a number of `read_pmf_*` functions which read EPA PMF's outputs into R. Currently, only the `.csv` output format is supported because this was the easiest place to start. 
+
+### A **readr** note
+
+The **pmfr** package uses a number of [**readr**](https://github.com/tidyverse/readr) functions and the underlying code for **readr** was altered for the 2.0 release. This has caused many issues with **pmfr** and will be resolved shortly. However, for now, if issues are encountered after upgrading **readr**, I can recommend rolling back to the previous **readr** version so **pmfr** continues to function as before. To downgrade **readr**, use the code below: 
+
+```
+# Install a specific, older version of readr
+remotes::install_version(
+  "readr", version = "1.4.0", repos = "http://cran.us.r-project.org"
+)
+```
