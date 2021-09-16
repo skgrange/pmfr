@@ -15,7 +15,7 @@ read_pmf_constrained_diagnostics <- function(file, tz = "UTC") {
   if (length(file) == 0) return(list())
   
   # Read file as text
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Build a named list with all the components
   # To-do: the empty tibbles are for tables which are to be formatted...
@@ -84,7 +84,9 @@ format_constrained_constraints <- function(text) {
   index_end <- stringr::str_which(text, "Constrained Run Summary")[2] - 2L
   
   # Read table
-  readr::read_csv(text[index_start:index_end]) %>% 
+  text[index_start:index_end] %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(show_col_type = FALSE, progress = FALSE) %>% 
     dplyr::rename_all(str_to_underscore) %>% 
     rename(percent_d_q = `%_d_q`)
   
@@ -98,7 +100,9 @@ format_constrained_run_summary_table <- function(text) {
   index_end <- stringr::str_which(text, "Factor Profiles")[1] - 2L
   
   # Parse table
-  readr::read_csv(text[index_start:index_end]) %>% 
+  text[index_start:index_end] %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(show_col_type = FALSE, progress = FALSE) %>% 
     purrr::set_names(
       c(
         "constrained_number", "d_q_robust", "q_robust", "q_aux", "q_true", 
@@ -119,7 +123,11 @@ format_constrained_factor_profiles <- function(text) {
   
   # Parse table, suppression is for missing rows
   suppressWarnings(
-    df <- readr::read_csv(text[index_start:index_end], col_names = FALSE, na = "*")
+    df <- text[index_start:index_end] %>% 
+      stringr::str_c(collapse = "\n") %>% 
+      readr::read_csv(
+        col_names = FALSE, na = "*", show_col_types = FALSE, progress = FALSE
+      )
   )
   
   # Clean the names
@@ -133,24 +141,27 @@ format_constrained_factor_profiles <- function(text) {
   # Give names, could be done in pipeline
   names(df) <- variable_names
   
-  # Add factor profile identifier and clean table a bit
-  df <- df %>%
-    tibble::rowid_to_column() %>% 
-    mutate(
-      factor_profile = if_else(rowid == 1L, "concentration_of_species", NA_character_),
-      factor_profile = dplyr::case_when(
-        stringr::str_detect(model_run, "% of species sum") ~ "percentage_of_species_sum",
-        stringr::str_detect(model_run, "% of total variable") ~ "percentage_of_factor_total",
-        TRUE ~ factor_profile
-      ),
-      factor_profile = na_locf(factor_profile)
-    ) %>% 
-    select(-rowid) %>% 
-    filter(!stringr::str_detect(model_run, "^Factor")) %>% 
-    mutate(model_run = as.integer(model_run),
-           model_type = "constrained") %>% 
-    relocate(model_type,
-             factor_profile)
+  # Add factor profile identifier and clean table a bit, warning suppression is
+  # to stop a raise in case_when, to-do find why this is happening...
+  suppressWarnings(
+    df <- df %>%
+      tibble::rowid_to_column() %>% 
+      mutate(
+        factor_profile = if_else(rowid == 1L, "concentration_of_species", NA_character_),
+        factor_profile = dplyr::case_when(
+          stringr::str_detect(model_run, "% of species sum") ~ "percentage_of_species_sum",
+          stringr::str_detect(model_run, "% of total variable") ~ "percentage_of_factor_total",
+          TRUE ~ factor_profile
+        ),
+        factor_profile = na_locf(factor_profile)
+      ) %>% 
+      select(-rowid) %>% 
+      filter(!stringr::str_detect(model_run, "^Factor")) %>% 
+      mutate(model_run = as.integer(model_run),
+             model_type = "constrained") %>% 
+      relocate(model_type,
+               factor_profile)
+  )
   
   return(df)
   
@@ -165,7 +176,9 @@ format_constrained_factor_contributions <- function(text, tz) {
   
   # Parse table, suppression is for missing rows
   suppressWarnings(
-    df <- readr::read_csv(text[index_start:index_end], col_names = FALSE)
+    df <- text[index_start:index_end] %>% 
+      stringr::str_c(collapse = "\n") %>% 
+      readr::read_csv(col_names = FALSE, show_col_types = FALSE, progress = FALSE)
   )
   
   # Clean the names
@@ -179,25 +192,28 @@ format_constrained_factor_contributions <- function(text, tz) {
   # Give names, could be done in pipeline
   names(df) <- variable_names
   
-  # Add unit identifier and clean data a bit
-  df <- df %>% 
-    tibble::rowid_to_column() %>% 
-    mutate(
-      unit = dplyr::case_when(
-        rowid == 1 ~ "normalised",
-        stringr::str_detect(model_run, "Total Variable") ~ "concentrations",
-        TRUE ~ NA_character_
-      ),
-      unit = na_locf(unit)
-    ) %>% 
-    select(-rowid) %>% 
-    filter(!stringr::str_detect(model_run, "Factor|Total")) %>% 
-    mutate(date = lubridate::mdy_hms(date, tz = tz, truncated = 3),
-           model_run = as.integer(model_run), 
-           model_type = "constrained") %>% 
-    relocate(model_type,
-             model_run,
-             unit)
+  # Add factor profile identifier and clean table a bit, warning suppression is
+  # to stop a raise in case_when, to-do find why this is happening...
+  suppressWarnings(
+    df <- df %>% 
+      tibble::rowid_to_column() %>% 
+      mutate(
+        unit = dplyr::case_when(
+          rowid == 1 ~ "normalised",
+          stringr::str_detect(model_run, "Total Variable") ~ "concentrations",
+          TRUE ~ NA_character_
+        ),
+        unit = na_locf(unit)
+      ) %>% 
+      select(-rowid) %>% 
+      filter(!stringr::str_detect(model_run, "Factor|Total")) %>% 
+      mutate(date = lubridate::mdy_hms(date, tz = tz, truncated = 3),
+             model_run = as.integer(model_run), 
+             model_type = "constrained") %>% 
+      relocate(model_type,
+               model_run,
+               unit)
+  )
   
   return(df)
   

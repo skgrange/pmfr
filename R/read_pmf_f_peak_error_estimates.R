@@ -44,7 +44,8 @@ read_pmf_f_peak_error_estimation_summary <- function(text) {
   index_end <- stringr::str_which(text, "Fpeak value for") - 1L
   
   df <- text[index_start:index_end]  %>% 
-    readr::read_csv() %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(show_col_types = FALSE, progress = FALSE) %>% 
     purrr::set_names(
       c(
         "f_peak_run", "strength", "d_q_robust", "q_robust", "d_q_robust_percent", 
@@ -68,7 +69,8 @@ read_pmf_f_peak_error_estimation_summary_mapping <- function(text) {
   # Warning suppression is for missing column name
   df <- suppressWarnings(
     text[index_start:index_end] %>% 
-      readr::read_csv()
+      stringr::str_c(collapse = "\n") %>% 
+      readr::read_csv(show_col_types = FALSE, progress = FALSE)
   )
   
   # Clean names
@@ -100,7 +102,14 @@ read_pmf_f_peak_error_estimation_concentration <- function(text) {
   # To tibble
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
     purrr::map(~stringr::str_remove(., ",$")) %>% 
-    purrr::map_dfr(readr::read_csv, skip = 2, .id = "factor") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      skip = 2, 
+      show_col_types = FALSE, 
+      progress = FALSE,
+      .id = "factor"
+    ) %>% 
     purrr::set_names(
       c(
         "factor", "species", "f_peak_value", "bootstrap_5th", "bootstap_median",
@@ -108,8 +117,7 @@ read_pmf_f_peak_error_estimation_concentration <- function(text) {
       )
     ) %>% 
     mutate(error_estimation_type = "concentration") %>% 
-    select(error_estimation_type,
-           everything())
+    relocate(error_estimation_type)
   
   return(df)
   
@@ -127,7 +135,14 @@ read_pmf_f_peak_error_estimation_precent_species <- function(text) {
   # To tibble
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
     purrr::map(~stringr::str_remove(., ",$")) %>% 
-    purrr::map_dfr(readr::read_csv, skip = 2, .id = "factor") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      skip = 2, 
+      show_col_types = FALSE, 
+      progress = FALSE,
+      .id = "factor"
+    ) %>% 
     purrr::set_names(
       c(
         "factor", "species", "f_peak_value", "bootstrap_5th", "bootstap_median",
@@ -153,7 +168,14 @@ read_pmf_f_peak_error_estimation_precent_factor <- function(text) {
   # To tibble
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
     purrr::map(~stringr::str_remove(., ",$")) %>% 
-    purrr::map_dfr(readr::read_csv, skip = 2, .id = "factor") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      skip = 2, 
+      show_col_types = FALSE, 
+      progress = FALSE,
+      .id = "factor"
+    ) %>% 
     purrr::set_names(
       c(
         "factor", "species", "f_peak_value", "bootstrap_5th", "bootstap_median",

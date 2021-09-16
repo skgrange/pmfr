@@ -10,7 +10,7 @@
 read_pmf_configuration <- function(file) {
   
   # Not using an xml parser here, just string process
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   matrix_text <- stringr::str_subset(text, "key=") %>% 
     stringr::str_split_fixed("key=|value=", 3)

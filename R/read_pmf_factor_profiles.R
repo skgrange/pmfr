@@ -13,7 +13,7 @@ read_pmf_factor_profiles <- function(file) {
   if (length(file) == 0) return(tibble())
   
   # Read as character vector
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Drop missing lines
   text_filter <- text[text != ""]
@@ -25,11 +25,18 @@ read_pmf_factor_profiles <- function(file) {
   
   # Split into pieces then parse the tabular data
   # Message suppression is for missing variable names
-  suppressWarnings(
+  suppressMessages(
     df <- purrr::map2(index_start, index_end, ~text_filter[.x:.y]) %>% 
-      purrr::map_dfr(readr::read_csv, na = "*", .id = "table") %>% 
-      mutate(table = as.integer(table))
-  )
+      purrr::map(stringr::str_c, collapse = "\n") %>% 
+      purrr::map_dfr(
+        readr::read_csv, 
+        na = "*", 
+        show_col_types = FALSE, 
+        progress = FALSE,
+        .id = "table"
+      ) %>% 
+      mutate(table = as.integer(table)) 
+    )
   
   # Clean names
   names(df)[2:3] <- c("model_run", "species")

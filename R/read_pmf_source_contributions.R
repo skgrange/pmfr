@@ -10,7 +10,7 @@
 #' @export
 read_pmf_source_contributions <- function(file) {
   
-  # Read excel sheet, message supression is for name repair
+  # Read excel sheet, message suppression is for name repair
   df <- suppressMessages(
     readxl::read_excel(
       file, 

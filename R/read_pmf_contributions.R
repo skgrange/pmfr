@@ -12,18 +12,22 @@
 read_pmf_contributions <- function(file, tz = "UTC") {
   
   # Load data
-  # Suppression is for missing column names
-  suppressWarnings(
+  # Message suppression is for missing column names
+  suppressMessages(
     df <- readr::read_csv(
       file, 
       skip = 3, 
-      col_types = readr::cols(), 
+      show_col_types = FALSE,
       progress = FALSE
     )
   )
   
   # Where do the concentration tables start? 
-  index_concentration_start <- stringr::str_which(df$X1, "conc. units")[1]
+  suppressWarnings(
+    index_concentration_start <- stringr::str_which(
+      df[, 1, drop = TRUE], "conc. units"
+    )[1]
+  )
   
   # Raise message if no concentration data, this is key for analysis
   if (is.na(index_concentration_start)) {
@@ -36,7 +40,7 @@ read_pmf_contributions <- function(file, tz = "UTC") {
   )
   
   # Does this file have an id variable?
-  has_id <- stringr::str_detect(names(df), "^X")[3]
+  has_id <- stringr::str_detect(names(df), "^\\.\\.\\.")[3]
   
   # Clean names
   if (has_id) {

@@ -13,7 +13,7 @@ read_pmf_constrained_error_bootstraps <- function(file) {
   if (length(file) == 0) return(list())
   
   # Read file as text
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Format the two units in the file
   list_data <- list(
@@ -33,9 +33,11 @@ format_constrained_bootstrap_mapping <- function(text) {
   index_end <- stringr::str_which(text, "Constrained Bootstrapping") - 3L
   
   # Parse table
-  # Warning suppression is for missing first name
-  df <- suppressWarnings(
-    readr::read_csv(text[index_start:index_end])
+  # Message suppression is for missing first name
+  df <- suppressMessages(
+    text[index_start:index_end] %>% 
+      stringr::str_c(collapse = "\n") %>% 
+      readr::read_csv(show_col_types = FALSE, progress = FALSE)
   )
   
   # Clean names
@@ -62,7 +64,9 @@ format_constrained_bootstrap_bootstraps <- function(text) {
   index_end <- length(text)
   
   # Parse table
-  df <- readr::read_csv(text[(index_start + 2L):index_end], col_names = FALSE)
+  df <- text[(index_start + 2L):index_end] %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(col_names = FALSE, show_col_types = FALSE, progress = FALSE)
   
   # Get and clean names
   names_bootstrap <- text[index_start] %>% 

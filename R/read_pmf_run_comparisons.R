@@ -10,15 +10,18 @@
 read_pmf_run_comparisons <- function(file) {
   
   # Read as text
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Get the three different types of statistics
-  df <- bind_rows(
-    read_pmf_run_comparisons_concentrations(text),
-    read_pmf_run_comparisons_species_sum(text),
-    read_pmf_run_comparisons_total(text)
+  # Message suppression is for missing column name
+  suppressMessages(
+    df <- bind_rows(
+      read_pmf_run_comparisons_concentrations(text),
+      read_pmf_run_comparisons_species_sum(text),
+      read_pmf_run_comparisons_total(text)
+    )
   )
-  
+
   # Give good names
   names(df)[-1:-2] <- c(
     "species", "lowest_q", "minimum", "lower_quartile", "median", 
@@ -108,17 +111,14 @@ read_pmf_run_comparisons_total <- function(text) {
 read_pmf_run_comparisons_tables <- function(text, index_start, index_end, 
                                             comparison) {
   
-  # Message supression is for missing column name
-  df <- suppressWarnings(
-    purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-      purrr::map_dfr(readr::read_csv, .id = "factor") %>% 
-      mutate(factor = as.integer(factor),
-             comparison = !!comparison) %>% 
-      select(comparison, 
-             factor,
-             everything())
-  )
-  
-  return(df)
+  purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, show_col_types = FALSE, progress = FALSE, .id = "factor"
+    ) %>% 
+    mutate(factor = as.integer(factor),
+           comparison = !!comparison) %>% 
+    relocate(comparison, 
+             factor)
   
 }

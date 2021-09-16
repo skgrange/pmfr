@@ -11,7 +11,7 @@
 read_pmf_base_error_estimations <- function(file) {
   
   # Read file as text
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Remove trailing commas
   text <- stringr::str_remove(text, ",$")
@@ -161,11 +161,16 @@ read_pmf_base_error_estimations_tables <- function(text, index_start, index_end,
   # Suppression is for trailing columns
   suppressWarnings(
     df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-      purrr::map_dfr(readr::read_csv, .id = "factor") %>% 
+      purrr::map(stringr::str_c, collapse = "\n") %>% 
+      purrr::map_dfr(
+        readr::read_csv, 
+        show_col_types = FALSE,
+        progress = FALSE,
+        .id = "factor"
+      ) %>% 
       mutate(factor = as.integer(factor),
              comparison = !!comparison) %>% 
-      select(comparison,
-             everything()) %>% 
+      relocate(comparison) %>% 
       dplyr::mutate_if(is.character, type.convert, as.is = TRUE) %>% 
       dplyr::mutate_if(is.logical, as.numeric) 
   )

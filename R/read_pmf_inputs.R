@@ -15,7 +15,7 @@ read_pmf_inputs <- function(file_concentrations, file_errors, tz = "UTC") {
   
   # Load concentrations
   df <- file_concentrations %>%
-    readr::read_delim(delim = "\t", col_types = readr::cols()) %>%
+    readr::read_delim(delim = "\t", col_types = readr::cols(), progress = FALSE) %>%
     mutate(date = lubridate::ymd(date, tz = tz))
   
   # Does the table have an id variable? 
@@ -36,7 +36,7 @@ read_pmf_inputs <- function(file_concentrations, file_errors, tz = "UTC") {
     
     # Load error table
     df_errors <- file_errors %>% 
-      readr::read_delim(delim = "\t", col_types = readr::cols()) %>% 
+      readr::read_delim(delim = "\t", col_types = readr::cols(), progress = FALSE) %>% 
       mutate(date = lubridate::ymd(date, tz = tz)) %>% 
       tidyr::pivot_longer(
         -dplyr::all_of(name_id), names_to = "variable", values_to = "error"

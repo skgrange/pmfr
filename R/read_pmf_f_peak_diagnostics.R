@@ -37,7 +37,8 @@ read_pmf_f_peak_diagnostics_analysis_summary <- function(text) {
   index_end <- stringr::str_which(text, "Fpeak Run")[1] - 1L
   
   df <- text[index_start:index_end] %>% 
-    readr::read_csv(col_names = FALSE) %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(col_names = FALSE, show_col_types = FALSE, progress = FALSE) %>% 
     rename(variable = X1,
            value = X2) %>% 
     mutate(variable = clean_summary_variables(variable),
@@ -58,7 +59,8 @@ read_pmf_f_peak_diagnostics_run_summary <- function(text) {
   index_end <- stringr::str_which(text, "Fpeak Run Summary Table") - 1L
   
   df <- text[index_start:index_end] %>% 
-    readr::read_csv(col_names = FALSE) %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(col_names = FALSE, show_col_types = FALSE, progress = FALSE) %>% 
     rename(variable = X1,
            value = X2) %>% 
     mutate(variable = clean_summary_variables(variable),
@@ -75,7 +77,8 @@ read_pmf_f_peak_diagnostics_run_summary_table <- function(text) {
   index_end <- stringr::str_which(text, "Factor Profiles")[1] - 1L
   
   df <- text[index_start:index_end] %>% 
-    readr::read_csv() %>% 
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(show_col_types = FALSE, progress = FALSE) %>% 
     purrr::set_names(
       c(
         "f_peak_run", "strength", "d_q_robust", "q_robust", "d_q_robust_precent",
@@ -104,7 +107,14 @@ read_pmf_f_peak_diagnostics_factor_profiles <- function(text) {
   
   # Make tibble
   df <- purrr::map2(index_start_tables, index_end_tables, ~text_filter[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, col_names = FALSE, .id = "factor_profile") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      col_names = FALSE, 
+      show_col_types = FALSE,
+      progress = FALSE,
+      .id = "factor_profile"
+    ) %>% 
     rename(f_peak_run = X1,
            species = X2) %>% 
     mutate(factor_profile = as.integer(factor_profile),
@@ -133,7 +143,14 @@ read_pmf_f_peak_diagnostics_factor_contributions <- function(text, tz) {
   index_end <- if_else(is.na(index_end), index_regression_diagnostics, index_end)
   
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, , col_names = FALSE, .id = "model_run") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      col_names = FALSE, 
+      show_col_types = FALSE,
+      progress = FALSE,
+      .id = "model_run"
+    ) %>% 
     rename(f_peak_run = X1,
            date = X2) %>% 
     mutate(f_peak_run = as.integer(f_peak_run),
@@ -155,7 +172,13 @@ read_pmf_f_peak_diagnostics_regression_diagnostics <- function(text) {
   index_end <- if_else(is.na(index_end), length(text), index_end)
   
   df <- purrr::map2(index_start, index_end, ~text[.x:.y]) %>% 
-    purrr::map_dfr(readr::read_csv, .id = "model_run") %>% 
+    purrr::map(stringr::str_c, collapse = "\n") %>% 
+    purrr::map_dfr(
+      readr::read_csv, 
+      show_col_types = FALSE,
+      progress = FALSE,
+      .id = "model_run"
+    ) %>% 
     mutate(model_run = as.integer(model_run)) %>% 
     purrr::set_names(
       c(

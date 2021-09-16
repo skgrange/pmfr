@@ -10,13 +10,14 @@
 read_pmf_base_error_bootstraps <- function(file) {
   
   # Read file as text
-  text <- readr::read_lines(file)
+  text <- readr::read_lines(file, progress = FALSE)
   
   # Get first block, suppression is for missing name warning
-  df_mapping <- suppressWarnings(
+  df_mapping <- suppressMessages(
     text[2:(stringr::str_which(text, "^Bootstrapping and Pulling") - 1)] %>% 
-      readr::read_csv() %>% 
-      rename(bootstrap_factor = X1) %>% 
+      stringr::str_c(collapse = "\n") %>% 
+      readr::read_csv(show_col_types = FALSE, progress = FALSE) %>% 
+      rename(bootstrap_factor = ...1) %>% 
       purrr::set_names(str_to_underscore) %>% 
       mutate(bootstrap_factor = str_to_underscore(bootstrap_factor)) %>% 
       dplyr::rename_all(~stringr::str_remove(., "^base_"))
@@ -34,7 +35,8 @@ read_pmf_base_error_bootstraps <- function(file) {
     str_to_underscore()
   
   df_bootstraps <- text[(index_start + 1):length(text)] %>% 
-    readr::read_csv(col_names = FALSE)
+    stringr::str_c(collapse = "\n") %>% 
+    readr::read_csv(col_names = FALSE, show_col_types = FALSE, progress = FALSE)
   
   # Set names
   names(df_bootstraps)[1:length(names_bootstrap)] <- names_bootstrap
